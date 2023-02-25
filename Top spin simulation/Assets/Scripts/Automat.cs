@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Automat : MonoBehaviour
+ public class Automat : MonoBehaviour
 {
+    
     [SerializeField]
     Naped naped;
 
@@ -59,11 +60,11 @@ public class Automat : MonoBehaviour
         naped.GodPower(0);
         if (naped.osObr.rotation.eulerAngles.z != 90)
         {
-            naped.SetSpeed(0.07f);
+            naped.SetSpeed(0.3f);
             while (naped.osObr.rotation.eulerAngles.z < 90)
                 yield return null;
 
-            naped.SetSpeed(-0.07f);
+            naped.SetSpeed(-0.3f);
             while (naped.osObr.rotation.eulerAngles.z > 90)
                 yield return null;
             naped.SetSpeed(0);
@@ -71,7 +72,7 @@ public class Automat : MonoBehaviour
         }
         naped.SetBrake(false);
         yield return new WaitForSeconds(2f);
-        naped.SetSpeed(0.07f);
+        naped.SetSpeed(0.3f);
         yield return new WaitForSeconds(2f);
 
         while (naped.osObr.rotation.eulerAngles.z < 130f)
@@ -80,10 +81,10 @@ public class Automat : MonoBehaviour
         yield return new WaitForSeconds(1f);
         naped.SetBrake(true);
 
-        naped.SetSpeed(-0.04f);
+        naped.SetSpeed(-0.2f);
         while (naped.osObr.rotation.eulerAngles.z > 90)
             yield return null;
-        naped.SetSpeed(0.01f);
+        naped.SetSpeed(0.1f);
         while (naped.osObr.rotation.eulerAngles.z < 90)
             yield return null;
         naped.SetSpeed(0.00f);
@@ -115,28 +116,28 @@ public class Automat : MonoBehaviour
         while (naped.osObr.rotation.eulerAngles.z > 1f)
         {
 
-            speed = Mathf.Lerp(speed, -0.14f, 0.004f*D());
+            speed = Mathf.Lerp(speed, -0.34f, 0.004f*D());
             naped.SetSpeed(speed);
             yield return null;
         }
 
         naped.SetSpeed(0);
         yield return new WaitForSeconds(3);
-        naped.SetSpeed(0.07f);
+        naped.SetSpeed(0.2f);
         yield return new WaitForSeconds(4);
 
 
         speed = 0;
         while (naped.osObr.rotation.eulerAngles.z < 180f)
         {
-            speed = Mathf.Lerp(speed, 0.2f, 0.01f * D());
+            speed = Mathf.Lerp(speed, 0.35f, 0.01f * D());
             naped.SetSpeed(speed);
             yield return null;
         }
         naped.SetSpeed(0);
 
 
-        while (naped.rotSpeed > 0.15f)
+        while (naped.gondola.angularVelocity.x > 0.15f)
         {
             yield return null;
         }
@@ -451,7 +452,7 @@ public class Automat : MonoBehaviour
 
 
 
-        /*naped.SetSpeed(-0.45f);
+        naped.SetSpeed(-0.45f);
         yield return new WaitForSeconds(0.15f);
         naped.SetSpeed(0f);
         //naped.gondola.rotation.eulerAngles.x <170&&naped.gondola.rotation.eulerAngles.x >180f
@@ -503,7 +504,7 @@ public class Automat : MonoBehaviour
 
         
 
-        naped.GodPower(10);*/
+        naped.GodPower(10);
 
     }
     IEnumerator Wait(float seconds)

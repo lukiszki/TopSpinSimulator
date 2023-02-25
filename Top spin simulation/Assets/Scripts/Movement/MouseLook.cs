@@ -22,7 +22,7 @@ public class MouseLook : MonoBehaviour
 
     void Start()
     {
-        //Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.Locked;
        // Input.gyro.enabled = true;
     }
     private  Quaternion GyroToUnity(Quaternion q)
@@ -50,7 +50,7 @@ public class MouseLook : MonoBehaviour
             mouseDelta.x /= Screen.width;
             mouseDelta.y /= Screen.height;
             mouseDelta = mousePos - mouseDelta;
-            print(mouseDelta);
+            //print(mouseDelta);
         }
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;

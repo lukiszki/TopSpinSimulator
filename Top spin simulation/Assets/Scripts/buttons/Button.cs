@@ -5,6 +5,7 @@ using UnityEngine.Audio;
 
 public class Button : MonoBehaviour
 {
+    
     [SerializeField]
     Naped naped;
     [SerializeField]
@@ -39,24 +40,24 @@ public class Button : MonoBehaviour
             case ButtonType.AUTOSWITHCH:
                 if(!naped.AUTO)
                 {
-                    transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, 135,transform.localRotation.eulerAngles.z);
-                    naped.ToogleAuto(true);
+                    transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y,-60);
+                    naped.AUTO = (true);
                 }
                 else
                 {
-                    transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, 90,transform.localRotation.eulerAngles.z);
-                    naped.ToogleAuto(false);
+                    transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, 0);
+                   naped.AUTO = (false);
                 }
             break;
             case ButtonType.START:
-                if(naped.AUTO&&naped.mainPump)
+                if(naped.AUTO&&naped.pompaGlowna)
                     automat.StartAuto();
                 break;
             case ButtonType.STOP:
                 automat.Stop();
             break;
             case ButtonType.PARK:
-                if(naped.AUTO&&naped.mainPump)
+                if(naped.AUTO&&naped.pompaGlowna)
                     automat.StartPark();
             break;
             case ButtonType.SOUND:
@@ -64,20 +65,20 @@ public class Button : MonoBehaviour
                 audio.Play();
             break;
             case ButtonType.SMALLPUMP:
-                if(!naped.smallPump&&!naped.mainPump&&!naped.pumpSwitch)
+                if(!naped.pompaLadujaca&&!naped.pompaGlowna&&!naped.wylacznikPompy&&naped.kluczyk)
                 {
-                    naped.smallPump = true;
+                    naped.PompLadujacaStart();
                     audio.PlayOneShot(clip);
                     noise.clip = noiseClip;
                     noise.Play();
                 }
             break;
             case ButtonType.MAINPUMP:
-                if(naped.smallPump&&!naped.mainPump&&!naped.pumpSwitch)
+                if(naped.pompaLadujaca && !naped.pompaGlowna && !naped.wylacznikPompy && naped.kluczyk)
                 {
-                    naped.mainPump = true;
+                    naped.PompGlownaStart();
                     audio.PlayOneShot(clip);
-                    noise.Stop();
+                   // noise.Stop();
                     noise.clip = noiseClip;
                     noise.Play();
 
@@ -86,52 +87,94 @@ public class Button : MonoBehaviour
                 }
             break;
             case ButtonType.PUMPSTOP:
-                naped.StopPump();
-                StartCoroutine(FadeOut(noise, 0.2f));
+                naped.PompaStop();
             break;
             case ButtonType.PUMPSWITCH:
-                if(!naped.pumpSwitch)
+                if(!naped.wylacznikPompy)
                 {
-                    naped.StopPump();   
-                    transform.localPosition = new Vector3(0.007999f,0.0064312f,0.010375f);
-                    naped.pumpSwitch = true;
-                    StartCoroutine(FadeOut(noise, 0.2f));
+                    naped.PompaStop();
+                    transform.localPosition = new Vector3(0.00799140427f, 0.00643120287f, 0.01036003f);
+                    naped.wylacznikPompy = true;
                 }
                 else
                 {
-                    transform.localPosition = new Vector3(0.007991404f,0.006431203f,0.01039703f);
-                    naped.pumpSwitch = false;
+                    transform.localPosition = new Vector3(0.00799140427f, 0.00643120287f, 0.0103970272f);
+                      naped.wylacznikPompy = false;
                 }
             break;
             case ButtonType.TARZAN:
-                if(naped.AUTO&&naped.mainPump)
+                if(naped.AUTO&&naped.pompaGlowna)
                     automat.StartTarzan();
 
             break;
             case ButtonType.KACZUCHY:
-                if(naped.AUTO&&naped.mainPump)
+                if(naped.AUTO&&naped.pompaGlowna)
                     automat.StartKaczuchy();
 
             break;
             case ButtonType.MORTAL:
-                if(naped.AUTO&&naped.mainPump)
+                if(naped.AUTO&&naped.pompaGlowna)
                     automat.StartMortal();
 
             break;
             case ButtonType.LOCKBRAKE:
-                if(!naped.lockBrake)
+                if(!naped.hamulecPrzelacznik)
                 {
-                    naped.lockBrake = true;
-                    naped.SetRot();
+                    naped.hamulecPrzelacznik = true;
+                   // naped.SetRot();
                     transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, -14.5f,transform.localRotation.eulerAngles.z);
                 }
-                else
+               else
                 {
-                    naped.lockBrake = false;
+                    naped.hamulecPrzelacznik = false;
                     transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, -53.6f,transform.localRotation.eulerAngles.z);
                 }
                 break;
-                
+            case ButtonType.KLUCZYK:
+                if (!naped.kluczyk)
+                {
+                    naped.Zasilanie(true);
+                    transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, 45);
+                    naped.kluczyk = true;
+                }
+                else
+                {
+                    transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, 0);
+                    naped.Zasilanie(false);
+                    naped.kluczyk = false;
+                }
+                break;
+
+            case ButtonType.PODESTR:
+                if (!naped.podestPrawyPrzelacznik)
+                {
+                    naped.podestPrawyPrzelacznik = true;
+                    naped.UstawPodesty();
+                    transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, -14.5f, transform.localRotation.eulerAngles.z);
+                }
+                else
+                {
+                    naped.podestPrawyPrzelacznik = false;
+                    naped.UstawPodesty();
+                    transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, -53.6f, transform.localRotation.eulerAngles.z);
+                }
+                break;
+
+            case ButtonType.PODESTL:
+                if (!naped.podestLewyPrzelacznik)
+                {
+                    naped.podestLewyPrzelacznik = true;
+                    naped.UstawPodesty();
+                    transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, -14.5f, transform.localRotation.eulerAngles.z);
+                }
+                else
+                {
+                    naped.podestLewyPrzelacznik = false;
+                    naped.UstawPodesty();
+                    transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, -53.6f, transform.localRotation.eulerAngles.z);
+                }
+                break;
+
 
 
         }
@@ -141,20 +184,7 @@ public class Button : MonoBehaviour
 
 
 
-        IEnumerator FadeOut (AudioSource audioSource, float FadeTime)
-        {
-            float startVolume = audioSource.volume;
-    
-            while (audioSource.volume > 0)
-            {
-                audioSource.volume -= startVolume * Time.deltaTime / FadeTime;
- 
-                yield return null;
-            }
- 
-            audioSource.Stop ();
-            audioSource.volume = startVolume;
-        }
+       
   
 }
-enum ButtonType{AUTOSWITHCH,START, STOP, PARK, SOUND, SMALLPUMP, MAINPUMP,PUMPSTOP,PUMPSWITCH,TARZAN,KACZUCHY,MORTAL,LOCKBRAKE}
+enum ButtonType{AUTOSWITHCH,START, STOP, PARK, SOUND, SMALLPUMP, MAINPUMP,PUMPSTOP,PUMPSWITCH,TARZAN,KACZUCHY,MORTAL,LOCKBRAKE,PODESTL,PODESTR,ZAMKNIECIEA,ZAMKNIECIEB,KLUCZYK}

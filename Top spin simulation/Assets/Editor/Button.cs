@@ -12,7 +12,7 @@ public class Button : Editor
 
         if(GUILayout.Button("Randomize AI"))
         {
-            naped.RandomizeVals();
+            //naped.RandomizeVals();
         }
     }
 }
