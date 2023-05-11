@@ -61,6 +61,21 @@ public class Naped : MonoBehaviour
     [SerializeField]
     AudioSource pompaDzwiek2;
 
+    [Header("Kompresor")]
+
+    [SerializeField]
+    AudioSource kompresorDzwiekZrodlo;
+    [SerializeField]
+    AudioClip kompresorStart;
+    [SerializeField]
+    AudioClip kompresorStop;
+    [SerializeField]
+    AudioClip kompresorRepeat;
+    public bool kompresorPrzelacznik = false;
+    [SerializeField]
+    bool kompresorStan = false;
+    [SerializeField]
+    float cisnienie = 0;
 
     [Header("Wzkaźniki")]
 
@@ -98,51 +113,54 @@ public class Naped : MonoBehaviour
 
     void Update()
     {
-       if(pompaGlowna&&kluczyk)
+        if (kluczyk)
         {
-            pompaDzwiek.volume = Mathf.Abs(osObr.angularVelocity.x);
-            if (!AUTO)
+            HandleKompresor();
+            if (pompaGlowna)
             {
-                if (Input.GetKey(KeyCode.R))
+                pompaDzwiek.volume = Mathf.Abs(osObr.angularVelocity.x);
+                if (!AUTO)
                 {
-                    silnik.force = 2;
-                    silnik.targetVelocity = maxSpeed;
-                }
-                else if (Input.GetKey(KeyCode.F))
-                {
+                    if (Input.GetKey(KeyCode.R))
+                    {
+                        silnik.force = 2;
+                        silnik.targetVelocity = maxSpeed;
+                    }
+                    else if (Input.GetKey(KeyCode.F))
+                    {
 
-                    silnik.force = 2;
-                    silnik.targetVelocity = -maxSpeed;
+                        silnik.force = 2;
+                        silnik.targetVelocity = -maxSpeed;
+                    }
+                    else
+                    {
+                        silnik.force = 0;
+                    }
                 }
                 else
                 {
-                    silnik.force = 0;
+                    silnik.force = Mathf.Abs(2 * predkoscAuto);
+                    silnik.targetVelocity = predkoscAuto > 0 ? maxSpeed : -maxSpeed;
+                }
+                if (Input.GetKey(KeyCode.B) || hamulecPrzelacznik || (AUTO && HamulecAuto))
+                {
+                    gondola.isKinematic = true;
+                }
+                else
+                {
+                    gondola.isKinematic = false;
                 }
             }
             else
             {
-                silnik.force = Mathf.Abs(2*predkoscAuto);
-                silnik.targetVelocity = predkoscAuto > 0 ? maxSpeed : -maxSpeed;
-            }
-            if (Input.GetKey(KeyCode.B) || hamulecPrzelacznik||(AUTO&&HamulecAuto))
-            {
-                gondola.isKinematic = true;
-            }
-            else
-            {
-                gondola.isKinematic = false;
+                pompaDzwiek.volume = 0;
             }
         }
-       else
-        {
-            pompaDzwiek.volume = 0;
-        }
-
-
 
 
         osObrHingeJoint.motor = silnik;
         KorygujWzkazniki();
+        UstawPodesty();
     }  
     internal void PompaStop()
     {
@@ -227,8 +245,11 @@ public class Naped : MonoBehaviour
 
     internal void UstawPodesty()
     {
-        podestPrawySterownik.SetBool("isDown", podestPrawyPrzelacznik);
-        podestLewySterownik.SetBool("isDown", podestLewyPrzelacznik);
+        if (kluczyk && cisnienie > 4)
+        {
+            podestPrawySterownik.SetBool("isDown", podestPrawyPrzelacznik);
+            podestLewySterownik.SetBool("isDown", podestLewyPrzelacznik);
+        }
 
     }
     internal void SetSpeed(float speed)
@@ -241,5 +262,47 @@ public class Naped : MonoBehaviour
     }
     internal void GodPower(float a = 0) { }
     internal void AddPower(float a = 0) { }
-    
+
+    IEnumerator KompresorStart()
+    {
+        kompresorStan = true;
+        kompresorDzwiekZrodlo.loop = false;
+        kompresorDzwiekZrodlo.clip = kompresorStart;
+        kompresorDzwiekZrodlo.Play();
+        yield return new WaitForSeconds(kompresorStart.length);
+        kompresorDzwiekZrodlo.clip = kompresorRepeat;
+        kompresorDzwiekZrodlo.loop = true;
+        kompresorDzwiekZrodlo.Play();
+    }
+
+    IEnumerator KompresorStop()
+    {
+        kompresorStan = false;
+        kompresorDzwiekZrodlo.loop = false;
+        kompresorDzwiekZrodlo.clip = kompresorStop;
+        kompresorDzwiekZrodlo.Play();
+        yield return new WaitForSeconds(kompresorStop.length);
+        kompresorDzwiekZrodlo.Stop();
+        
+    }
+    void HandleKompresor()
+    {
+        if (kompresorPrzelacznik && kompresorStan == false && cisnienie < 5)
+        {
+            StartCoroutine(KompresorStart());
+        }
+        if ((!kompresorPrzelacznik && kompresorStan == true) || (kompresorStan == true && cisnienie > 7))
+        {
+            StartCoroutine(KompresorStop());
+        }
+        if (kompresorStan == true)
+        {
+            cisnienie += -0.4f * Mathf.Log10(cisnienie*0.095f + 0.024f) * Time.deltaTime;
+        }
+        else
+        {
+            cisnienie -= cisnienie*0.002f * Time.deltaTime;
+        }
+    }
+
 }

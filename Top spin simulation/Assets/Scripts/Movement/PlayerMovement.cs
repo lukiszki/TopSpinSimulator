@@ -75,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
         if(Input.GetMouseButtonUp(0))
         {
             RaycastHit hit;
-            if(Physics.Raycast(camera.transform.position, camera.transform.forward, out hit, maxClickDistance,layerClick))
+            if(Physics.Raycast(camera.transform.position, camera.transform.forward, out hit, maxClickDistance))
             {
                 Button button;
                 if(hit.collider.gameObject.TryGetComponent( out button))

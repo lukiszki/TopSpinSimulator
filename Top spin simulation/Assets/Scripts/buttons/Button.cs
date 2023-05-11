@@ -174,6 +174,20 @@ public class Button : MonoBehaviour
                     transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, -53.6f, transform.localRotation.eulerAngles.z);
                 }
                 break;
+            case ButtonType.KOMPRESOR:
+                if (!naped.kompresorPrzelacznik)
+                {
+                    //StartCoroutine(naped.KompresorStart());
+                    naped.kompresorPrzelacznik = true;
+                    transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, -14.5f, transform.localRotation.eulerAngles.z);
+                }
+                else
+                {
+                    //StartCoroutine(naped.KompresorStop());
+                    naped.kompresorPrzelacznik = false;
+                    transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, -53.6f, transform.localRotation.eulerAngles.z);
+                }
+                break;
 
 
 
@@ -187,4 +201,4 @@ public class Button : MonoBehaviour
        
   
 }
-enum ButtonType{AUTOSWITHCH,START, STOP, PARK, SOUND, SMALLPUMP, MAINPUMP,PUMPSTOP,PUMPSWITCH,TARZAN,KACZUCHY,MORTAL,LOCKBRAKE,PODESTL,PODESTR,ZAMKNIECIEA,ZAMKNIECIEB,KLUCZYK}
+enum ButtonType{AUTOSWITHCH,START, STOP, PARK, SOUND, SMALLPUMP, MAINPUMP,PUMPSTOP,PUMPSWITCH,TARZAN,KACZUCHY,MORTAL,LOCKBRAKE,PODESTL,PODESTR,ZAMKNIECIEA,ZAMKNIECIEB,KLUCZYK,KOMPRESOR}
