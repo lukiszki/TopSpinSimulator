@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using static UnityEditor.PlayerSettings;
 
 public class Naped : MonoBehaviour
 {
@@ -95,7 +96,11 @@ public class Naped : MonoBehaviour
     [SerializeField]
     Animator podestLewySterownik;
 
-
+    [Header("Manipulator")]
+    [SerializeField]
+    Transform manipulator;
+    float stickPos = 0;
+    bool brakeButton = false;
 
     void Start()
     {
@@ -109,10 +114,11 @@ public class Naped : MonoBehaviour
  
         
         float volume = 0;
-    
 
-    void Update()
+
+    void Update() 
     {
+        HandleStick();
         if (kluczyk)
         {
             HandleKompresor();
@@ -121,15 +127,16 @@ public class Naped : MonoBehaviour
                 pompaDzwiek.volume = Mathf.Abs(osObr.angularVelocity.x);
                 if (!AUTO)
                 {
-                    if (Input.GetKey(KeyCode.R))
+                    
+                    if (stickPos>0)
                     {
-                        silnik.force = 2;
+                        silnik.force = 2*Mathf.Abs(stickPos);
                         silnik.targetVelocity = maxSpeed;
                     }
-                    else if (Input.GetKey(KeyCode.F))
+                    else if (stickPos < 0)
                     {
 
-                        silnik.force = 2;
+                        silnik.force = 2 * Mathf.Abs(stickPos);
                         silnik.targetVelocity = -maxSpeed;
                     }
                     else
@@ -142,7 +149,7 @@ public class Naped : MonoBehaviour
                     silnik.force = Mathf.Abs(2 * predkoscAuto);
                     silnik.targetVelocity = predkoscAuto > 0 ? maxSpeed : -maxSpeed;
                 }
-                if (Input.GetKey(KeyCode.B) || hamulecPrzelacznik || (AUTO && HamulecAuto))
+                if (brakeButton || hamulecPrzelacznik || (AUTO && HamulecAuto))
                 {
                     gondola.isKinematic = true;
                 }
@@ -161,13 +168,22 @@ public class Naped : MonoBehaviour
         osObrHingeJoint.motor = silnik;
         KorygujWzkazniki();
         UstawPodesty();
-    }  
+    }
+
+    private void HandleStick()
+    {
+        stickPos = Input.GetAxisRaw("Vertical");
+        brakeButton = Input.GetAxisRaw("Hamulec") == 1;
+        manipulator.localRotation = Quaternion.Euler(0, -16.227f + stickPos*20.0f, 0);
+    }
+
     internal void PompaStop()
     {
         pompaLadujaca = false;
         pompaGlowna = false;
         StartCoroutine(FadeOut(pompaDzwiek2, 0.2f));
     }
+    
 
     public void PompLadujacaStart()
     {

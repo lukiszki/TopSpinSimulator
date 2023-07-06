@@ -47,6 +47,8 @@ public class PlayerMovement : MonoBehaviour
 
     // Update is called once per frame
     float zSp = 0;
+    float xSp = 0;
+
     void Update()
     {
 
@@ -60,12 +62,23 @@ public class PlayerMovement : MonoBehaviour
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
         }
-
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxisRaw("Vertical");
+        float x = 0;
+        float z = 0;
+        if (Input.GetKey(KeyCode.D))
+             x = 1;
+        if (Input.GetKey(KeyCode.A))
+             x = -1;
+        if (Input.GetKey(KeyCode.W))
+             z = 1;
+        if (Input.GetKey(KeyCode.S))
+             z = -1;
+        
         zSp = Mathf.Lerp(zSp,z, 0.1f);
-        Vector3 move = transform.right * x + transform.forward * zSp;
-//        print(zSp);
+        xSp = Mathf.Lerp(xSp, x, 0.1f);
+        Vector3 move = transform.right * xSp + transform.forward * zSp;
+
+
+
         controller.Move(move * Time.deltaTime * speed);
 
         velocity.y += gravity * Time.deltaTime;

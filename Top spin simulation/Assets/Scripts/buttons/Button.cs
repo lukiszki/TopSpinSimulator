@@ -19,6 +19,9 @@ public class Button : MonoBehaviour
 
     [SerializeField]
     AudioClip clip;
+    [SerializeField]
+    AudioClip clip2;
+
 
     [SerializeField]
     AudioClip noiseClip;
@@ -95,13 +98,16 @@ public class Button : MonoBehaviour
                     naped.PompaStop();
                     transform.localPosition = new Vector3(0.00799140427f, 0.00643120287f, 0.01036003f);
                     naped.wylacznikPompy = true;
+                    audio.PlayOneShot(clip);
                 }
                 else
                 {
                     transform.localPosition = new Vector3(0.00799140427f, 0.00643120287f, 0.0103970272f);
                       naped.wylacznikPompy = false;
+                    audio.PlayOneShot(clip2);
+
                 }
-            break;
+                break;
             case ButtonType.TARZAN:
                 if(naped.AUTO&&naped.pompaGlowna)
                     automat.StartTarzan();
